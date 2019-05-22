@@ -1,5 +1,5 @@
 ---
-- hosts: ubuntu
+- hosts: tomcat
   tasks:
 
         - name: Install JAVA JDK
