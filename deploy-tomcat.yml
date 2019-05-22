@@ -1,0 +1,11 @@
+---
+- hosts: tomcat
+  tasks:
+
+        - name: Copy war file in Webapps location
+          copy:
+             src: /var/lib/jenkins/workspace/deploy-app/sample.war
+             dest: /var/lib/tomcat8/webapps/
+
+        - name: Ensure Apache is Running
+          service: name=tomcat8 state=started
