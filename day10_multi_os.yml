@@ -1,0 +1,10 @@
+---
+- name: Install Applications on Muli-OS 
+  hosts: 192.168.50.51
+  roles: 
+    - day10-nginx
+    - day10-java_jdk
+    - day10-tomcat
+     
+
+       

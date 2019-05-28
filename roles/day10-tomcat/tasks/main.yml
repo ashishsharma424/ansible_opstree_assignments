@@ -1,0 +1,71 @@
+---
+# tasks file for day10-tomcat
+
+- name: Create Tomcat Group
+  group:
+    name: tomcat
+    state: present
+
+- name: Creating user and adding it to tomcat group
+  user: 
+    name: tomcat
+    groups: tomcat
+    append: yes
+    shell: '/bin/false'
+    home: '/opt/tomcat'
+
+- name: Install WGET[UBUNTU]
+  apt: 
+    name: wget
+    state: latest
+  when: ansible_os_family == 'Debian'
+  
+- name: Install WGET[CENTOS]
+  yum:
+    name: wget
+    state: latest
+  when: ansible_os_family == 'RedHat'
+
+- name: Download Tomcat Binary
+  shell: |
+    cd /tmp
+    wget http://apache.mirrors.hoobly.com/tomcat/tomcat-8/v8.5.41/bin/apache-tomcat-8.5.41.tar.gz
+
+- name: Make directory /opt/tomcat
+  file:
+    path: /opt/tomcat
+    state: directory
+
+- name: Untar file
+  shell: |
+    cd /tmp
+    sudo tar -xzvf apache-tomcat-8*tar.gz -C /opt/tomcat --strip-components=1
+    cd /opt/tomcat
+    sudo chgrp -R tomcat /opt/tomcat
+    sudo chmod -R g+r conf
+    sudo chmod g+x conf
+    sudo chown -R tomcat webapps/ work/ temp/ logs/
+    
+- name: Create the systemd service file[Ubuntu]
+  copy: 
+    src: ubuntu.tomcat.service
+    dest: /etc/systemd/system/tomcat.service 
+  when: ansible_os_family == "Debian"
+
+- name: Create the systemd service file[Centos]
+  copy:
+    src: centos.tomcat.service
+    dest: /etc/systemd/system/tomcat.service
+  when: ansible_os_family == "RedHat"
+
+- name: Reload the systemd daemon so that it know our service
+  shell: |
+    sudo systemctl daemon-reload
+    sudo systemctl start tomcat
+
+- name: Check the status of Tomcat service
+  service_facts:
+
+- debug:
+    var: ansible_facts.services["tomcat.service"].state
+

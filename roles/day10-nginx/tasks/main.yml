@@ -1,0 +1,23 @@
+---
+# tasks file for day10-nginx
+- name: Install Nginx on Ubuntu
+  apt: 
+    name: nginx 
+    state: latest
+  when: ansible_os_family == "Debian"
+  notify:
+    - name: Start Nginx
+
+- name: Install Nginx on Centos
+  yum: 
+    name: nginx
+    state: latest
+  when: ansible_os_family == "RedHat"
+  notify:
+    - name: Start Nginx
+
+- name: Check for Nginx Status
+  service_facts:
+
+- debug:
+    var: ansible_facts.services['nginx.service'].state
