@@ -1,6 +1,6 @@
 ---
 - name: Install Applications on Muli-OS 
-  hosts: 192.168.50.51
+  hosts: servers
   user: root
   roles: 
     - {role: 'day10-nginx', tags: 'nginx'}
