@@ -2,9 +2,8 @@
 - name: Install Applications on Muli-OS 
   hosts: 192.168.50.51
   roles: 
-    - day10-nginx
-    - day10-java_jdk
-    - day10-tomcat
-     
+    - {role: 'day10-nginx', tags: 'nginx'}
+    - {role: 'day10-java_jdk', tags: 'java_jdk'}
+    - {role: 'day10-tomcat', tags: 'tomcat'} 
 
        
