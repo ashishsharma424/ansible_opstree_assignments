@@ -1,0 +1,66 @@
+---
+- name: Perform multiple tasks related to user creation and permissions
+  hosts: ubuntu
+  tasks:
+    - name: Adding Multiple Users and Appending in Sudoers file
+      user: 
+        name: "{{ item }}"
+        password: 123
+      with_items:
+        - user1
+        - user2
+        - user3
+        - user4
+
+    - name: Add ninja directory 
+      file: 
+        mode: 1777
+        path: /ninja
+        state: directory
+        owner: root
+        group: root
+
+    - name: Add new key to authorized_keys
+      authorized_key:
+       key="{{lookup('file','/home/opstree/.ssh/multi-user.pub')}}"
+       user=root
+       state=present
+
+    - name: Make use of new private key when connecting
+      set_fact: ansible_private_ssh_key=id_rsa_new.pub
+ 
+    - name: Install Linux Logical Volume Manager (lvm2)
+      apt: name=lvm2 state=latest update_cache=yes
+
+    - name: Dependencies- Start lvm2 service
+      systemd: name=lvm2-lvmetad state=started
+
+    - name: Create partition
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+
+    - name: Create Volume Group
+      lvg:
+        vg: redhat
+        pvs: /dev/sdb1
+
+    - name: Create Volume
+      lvol:
+        vg: redhat
+        lv: test
+        size: 8
+
+    - name: Create the file system on newly created Logical volume for "{{ mount_point }}"
+      filesystem:
+        fstype: ext4 ## What type of filesystem required eg:(ext3, ext4, xfs etc.)
+        dev: /dev/redhat/test ## Full related path of device mapper to be created with creating FS.
+
+    - name: Mount the created filesystem ## This is to create the FSTAB entry and mount the Filesystem.
+      mount:
+        path: /mnt/lvm_test ## Mount point where to mount the FS.
+        src: /dev/redhat/test ## Full related path of device mapper to be mounted under mount point.
+        fstype: ext4 ## Filesystem type
+        state: mounted
+

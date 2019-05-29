@@ -1,0 +1,22 @@
+---
+- hosts: ubuntu
+  tasks:
+        - name: Install tomcat8
+          apt: name=tomcat8 state=latest
+
+        - name: Dependencies
+          apt: name=tomcat8-docs state=latest
+
+        - name: Dependencies
+          apt: name=tomcat8-admin state=latest
+
+        - name: Dependencies
+          apt: name=tomcat8-examples state=latest
+
+        - name: Copy war file in Webapps location
+          copy:
+             src: /home/opstree/Desktop/vagrant_files/ansible_playbooks/sample.war
+             dest: /var/lib/tomcat8/webapps/
+
+        - name: Ensure Apache is Running
+          service: name=tomcat8 state=started

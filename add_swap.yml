@@ -1,0 +1,32 @@
+---
+- name: Add SWAP space
+  hosts: ubuntu
+  vars:
+   - swap_file_path: "/swapfile"
+
+  tasks:
+    - name: Create SWAP file
+      command: dd if=/dev/zero of={{ swap_file_path }} bs=1024 count=1048576
+
+    - name: Change the permission of swap file to 600
+      file: path={{ swap_file_path }}
+            owner=root
+            mode=0600 
+
+    - name: Setup Swap area on the file
+      command: mkswap {{ swap_file_path }}
+
+    - name: Write swap entry in fstab
+      lineinfile: 
+        path: /etc/fstab
+        insertafter: 'EOL'
+        line: "{{ swap_file_path }} swap swap defaults 0 0"
+
+    - name: Activate the Swap file
+      command: swapon {{ swap_file_path }}
+
+    - name: Verify
+      command: swapon --show
+      
+    - name: Verify
+      command: free -h 

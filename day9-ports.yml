@@ -1,0 +1,66 @@
+--- 
+- name: Ports
+  hosts: ubuntu
+  tasks: 
+    - name: create file locally to store the ouput of open ports in remote server
+      file:
+        dest: /tmp/open_ports
+        state: touch
+      delegate_to: localhost
+
+    - name: Check all open ports on remote servers
+      shell: netstat -lntup
+      register: op
+
+    - name: append the output of netstat command in the file created above
+      lineinfile:
+        dest: /tmp/open_ports
+        line: "{{ op }}"
+        insertafter: EOF
+      delegate_to: localhost
+
+    - name: Gather the rpm package facts
+      package_facts:
+        manager: auto
+
+    - name: Open SSH results
+      debug:
+        msg: open ssh server is not installed
+      when: "'openssh-server' not in ansible_facts.packages"  
+
+    - name: Open SSH Results
+      debug: 
+        msg: "Open SSH  found"
+      when: "'openssh-server' in ansible_facts.packages"
+
+    - name: Install Firewall Service
+      apt: name=firewalld state=latest update_cache=yes
+
+    - name: Start Firewall Service
+      service: name=firewalld state=started
+
+    - name: Enable port 22 for SSH
+      ufw:
+        rule: allow
+        port: 22
+        proto: tcp
+
+    - name: Enable port 8080 and 8081
+      ufw:
+        rule: allow
+        port: 8080:8081
+        proto: tcp
+
+    - name: FIREWALL restart to take the effects
+      service: name=firewalld state=restarted
+
+    - name: Check all open ports on remote servers
+      shell: netstat -lntup
+      register: op
+
+    - name: append the output of netstat command in the file created above
+      lineinfile:
+        dest: /tmp/open_ports
+        line: "{{ op }}"
+        insertafter: EOF
+      delegate_to: localhost
