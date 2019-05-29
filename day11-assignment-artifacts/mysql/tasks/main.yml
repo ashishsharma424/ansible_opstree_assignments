@@ -1,0 +1,62 @@
+---
+# tasks file for mysql
+- name: Install MySQL[UBUNTU]
+  apt: 
+    name: mysql-server
+    state: latest
+    update_cache: yes
+  when: 
+    ansible_os_family == "Debian"
+
+- name: Download file with check (md5)[Centos]
+  get_url:
+    url: https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm
+    dest: /tmp
+    checksum: md5:1a29601dc380ef2c7bc25e2a0e25d31e
+  when:
+    ansible_os_family == "RedHat"
+
+- name: Add MySQL Repositories[Centos]
+  yum:
+    name: /tmp/mysql57-community-release-el7-9.noarch.rpm
+    state: present
+  when: 
+    ansible_os_family == "RedHat"
+
+- name: Install MySQL[Centos]
+  yum: 
+    name: mysql-server
+    state: latest
+
+- name: Check MySQL service status
+  service_facts:
+
+- debug:
+    var: ansible_facts.services["mysql.service"].state
+
+- name: Update the dynamic values in my.cnf file [UBUNTU]
+  copy: 
+    src: my.cnf.ubuntu
+    dest: /etc/mysql/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  when: 
+    ansible_os_family == "Debian"
+  notify: 
+    - Restart MySQL [UBUNTU]
+
+- name: Update the dynamic values in my.cnf file [CENTOS]
+  copy:
+    src: my.cnf.centos
+    dest: /etc/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  when:
+    ansible_os_family == "RedHat"
+  notify:
+    - Restart MySQL [CENTOS]
+

@@ -1,0 +1,23 @@
+---
+# tasks file for postgres_sql
+- name: Install Postgresql [UBUNTU]
+  apt: 
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - postgresql 
+    - postgresql-contrib
+  when: 
+    ansible_os_family == "Debian"
+
+- name: Install postgresql [CENTOS]
+  yum: 
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - postgresql-server 
+    - postgresql-contrib
+  when: 
+    ansible_os_family == "RedHat"

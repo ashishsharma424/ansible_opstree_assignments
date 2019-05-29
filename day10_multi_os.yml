@@ -1,9 +1,10 @@
 ---
 - name: Install Applications on Muli-OS 
-  hosts: 192.168.50.51
+  hosts: myservers
+  user: root
   roles: 
     - {role: 'day10-nginx', tags: 'nginx'}
     - {role: 'day10-java_jdk', tags: 'java_jdk'}
     - {role: 'day10-tomcat', tags: 'tomcat'} 
-
-       
+    - {role: 'mysql', tags: 'mysql'}
+    - {role: 'postgres_sql', tags: 'postgres'}   

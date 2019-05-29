@@ -1,0 +1,21 @@
+---
+# handlers file for mysql
+- name: Restart MySQL [UBUNTU]
+  service: 
+    name: mysql
+    state: restarted
+  when:
+    ansible_os_family == "Debian"
+ 
+- name: Restart MySQL [CENTOS]
+  service:
+    name: mysqld
+    state: restarted
+  when:
+    ansible_os_family == "RedHat"
+
+
+- name: Restart Postgresql
+  service: 
+    name: postgresql
+    state: restarted

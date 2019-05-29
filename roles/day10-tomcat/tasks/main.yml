@@ -27,9 +27,9 @@
   when: ansible_os_family == 'RedHat'
 
 - name: Download Tomcat Binary
-  shell: |
-    cd /tmp
-    wget http://apache.mirrors.hoobly.com/tomcat/tomcat-8/v8.5.41/bin/apache-tomcat-8.5.41.tar.gz
+  get_url:
+    url: http://apache.mirrors.hoobly.com/tomcat/tomcat-8/v8.5.41/bin/apache-tomcat-8.5.41.tar.gz
+    dest: /tmp
 
 - name: Make directory /opt/tomcat
   file:
