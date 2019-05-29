@@ -1,14 +1,10 @@
 ---
 - name: Install Applications on Muli-OS 
-<<<<<<< HEAD
-  hosts: myservers
-=======
   hosts: servers
->>>>>>> 004cc8457e7b978b294f78e6e0c8ecfbd289ab3e
   user: root
   roles: 
     - {role: 'day10-nginx', tags: 'nginx'}
     - {role: 'day10-java_jdk', tags: 'java_jdk'}
     - {role: 'day10-tomcat', tags: 'tomcat'} 
-    - {role: 'mysql', tags: 'mysql'}
-    - {role: 'postgres_sql', tags: 'postgres'}   
+
+       
